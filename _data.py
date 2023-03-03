@@ -86,7 +86,7 @@ class CPU(BaseComponent):
             "Контроллер ОЗУ: " + self._setup('trmemorycontroller'),
         ]
         return (f"\n{'-' * 30}\n".join(params)
-                + f'\n\n\nБалл производительности для\n\n{name}:\n----------     {score}     ----------')
+                + f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------')
 
 
 class GPU(BaseComponent):
@@ -133,4 +133,4 @@ class GPU(BaseComponent):
             "Разъёмы доп. питания: " + self._setup('tr_doppitanie'),
         ]
         return (f"\n{'-' * 30}\n".join(params)
-                + f'\n\n\nБалл производительности для\n\n{name}:\n----------     {score}     ----------')
+                + f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------')
