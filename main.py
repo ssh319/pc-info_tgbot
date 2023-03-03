@@ -14,7 +14,7 @@ bot = TeleBot(API_TOKEN)
 def start_message(message):
     bot.send_message(
         message.chat.id,
-        'Введите линейку процессора и его модель через \"-\" (дефис)'
+        'Введите линейку устройства и его модель через \"-\" (дефис)'
     )
 
 
