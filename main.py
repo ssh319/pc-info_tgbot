@@ -45,8 +45,8 @@ def get_data(message):
 
                     app = GPU(series=inp_series, model=inp_model)
                     break
-
-        bot.send_message(message.chat.id, app.get_params())
+        if app:
+            bot.send_message(message.chat.id, app.get_params())
 
 
 if __name__ == '__main__':
