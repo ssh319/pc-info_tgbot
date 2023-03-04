@@ -22,7 +22,8 @@ _series = {
     r'CPUryzen_tr': 'Ryzen_Threadripper_',
     r'GPUgt': 'GeForce_%s_',
     r'CPUepyc': '%s_',
-    r'GPUgts': 'GeForce_%s_'
+    r'GPUgts': 'GeForce_%s_',
+    r'CPUfx': '%s-'
 }
 
 
