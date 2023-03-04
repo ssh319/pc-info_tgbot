@@ -100,10 +100,10 @@ class GPU(BaseComponent):
             self.html = self.html.replace(str(bytearray(chr(i), 'utf-8'))[12:-2], chr(i))
 
     def _setup(self, keyword: str) -> str:
-        pattern = fr'<tr id=\"{keyword}\".+?style=\"\">[/+\-(),.\s?\w-]+<?'
+        pattern = fr'<tr id=\"{keyword}\".+?style=\"\">[|/+\-(),.\s?\w-]+<?'
 
         result = search(pattern, self.html).group()
-        return search(r'>[/+(),.\w\s-]+<$', result).group()[1:-1]
+        return search(r'>[|/+(),.\w\s-]+<$', result).group()[1:-1]
 
     def _get_name_and_score(self) -> tuple:
         name_pattern = r"class=\"white\".+?title=\"\">[+(),.\w\s-]+<?"
