@@ -3,9 +3,8 @@ from _data import search, _series
 from telebot import TeleBot
 from background import non_stop
 
-secret_token = os.environ['*token*']
 
-API_TOKEN = secret_token
+API_TOKEN = os.environ.get('*token*')
 
 bot = TeleBot(API_TOKEN)
 
