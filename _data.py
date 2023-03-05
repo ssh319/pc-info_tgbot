@@ -31,6 +31,8 @@ class BaseComponent(ABC):
     def __init__(self, series, model):
         self.series = series
         self.model = model
+        self.url: str
+        self.html: str
 
     @abstractmethod
     def _setup(self, keyword: str) -> str: ...
