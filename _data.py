@@ -50,6 +50,9 @@ class CPU(BaseComponent):
 
         if self.series in ("athlon_", "phenom_"):
             self.model = self.model.replace('2_', 'II_', 1).replace('xII', 'x2')
+            
+        elif self.series == 'pentium_' and self.model[:2] in ('2_', '3_'):
+            self.model = self.model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
 
         self.url = f"https://www.chaynikam.info/cpu_comparison.html?{self.series + self.model}"
         self.html = str(urlopen(self.url).read()).replace('\\n', '').replace('<br/>', ' ')
