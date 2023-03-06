@@ -33,6 +33,9 @@ def get_data(message):
                     from _data import CPU
 
                     inp_series = _series[pattern] if pattern == 'CPUryzen_tr' else _series[pattern] % inp_series
+                    
+                    if inp_model in ('gold_g6400',):
+                        inp_model += '_'
 
                     app = CPU(series=inp_series, model=inp_model)
                     break
