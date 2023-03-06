@@ -31,8 +31,19 @@ class BaseComponent(ABC):
     def __init__(self, series, model):
         self.series = series
         self.model = model
-        self.url: str
-        self.html: str
+        
+        if self.__class__ is CPU:
+            if self.series in ("athlon_", "phenom_"):
+                self.model = self.model.replace('2_', 'II_', 1).replace('xII', 'x2')
+
+            elif self.series == 'pentium_' and self.model[:2] in ('2_', '3_'):
+                self.model = self.model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
+
+        self.url = f"https://www.chaynikam.info/{self.__class__.__name__.lower()}_comparison.html?{self.series + self.model}"
+        self.html = str(urlopen(self.url).read()).replace('\\n', '').replace('<br/>', ' ')
+
+        for i in range(ord('А'), ord('я') + 1):
+            self.html = self.html.replace(str(bytearray(chr(i), 'utf-8'))[12:-2], chr(i))
 
     @abstractmethod
     def _setup(self, keyword: str) -> str: ...
@@ -45,21 +56,6 @@ class BaseComponent(ABC):
 
 
 class CPU(BaseComponent):
-    def __init__(self, series, model):
-        BaseComponent.__init__(self, series, model)
-
-        if self.series in ("athlon_", "phenom_"):
-            self.model = self.model.replace('2_', 'II_', 1).replace('xII', 'x2')
-            
-        elif self.series == 'pentium_' and self.model[:2] in ('2_', '3_'):
-            self.model = self.model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
-
-        self.url = f"https://www.chaynikam.info/cpu_comparison.html?{self.series + self.model}"
-        self.html = str(urlopen(self.url).read()).replace('\\n', '').replace('<br/>', ' ')
-
-        for i in range(ord('А'), ord('я') + 1):
-            self.html = self.html.replace(str(bytearray(chr(i), 'utf-8'))[12:-2], chr(i))
-
     def _setup(self, keyword: str) -> str:
         pattern = fr'<tr id=\"{keyword}\".+?transparent\">[/+\-(),.\s?\w-]+<?'
 
@@ -96,15 +92,6 @@ class CPU(BaseComponent):
 
 
 class GPU(BaseComponent):
-    def __init__(self, series, model):
-        BaseComponent.__init__(self, series, model)
-
-        self.url = f"https://www.chaynikam.info/gpu_comparison.html?{self.series + self.model}"
-        self.html = str(urlopen(self.url).read()).replace('\\n', '').replace('<br/>', ' ')
-
-        for i in range(ord('А'), ord('я') + 1):
-            self.html = self.html.replace(str(bytearray(chr(i), 'utf-8'))[12:-2], chr(i))
-
     def _setup(self, keyword: str) -> str:
         pattern = fr'<tr id=\"{keyword}\".+?style=\"\">[|/+\-(),.\s?\w-]+<?'
 
