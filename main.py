@@ -44,6 +44,9 @@ def get_data(message):
                     from _data import GPU
 
                     inp_series = _series[pattern] % inp_series
+                    
+                    if inp_model == "1060":
+                        inp_model += "_6gb"
 
                     app = GPU(series=inp_series, model=inp_model)
                     break
