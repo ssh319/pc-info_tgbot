@@ -1,5 +1,5 @@
 import os
-from _data import search, _series
+from _data import search, series
 from telebot import TeleBot
 from background import non_stop
 
@@ -26,13 +26,13 @@ def get_data(message):
 
         app = None
 
-        for pattern in _series:
+        for pattern in series:
             if search(pattern[3:], inp_series):
 
                 if pattern.startswith("CPU"):
                     from _data import CPU
 
-                    inp_series = _series[pattern] if pattern == 'CPUryzen_tr' else _series[pattern] % inp_series
+                    inp_series = series[pattern] if pattern == 'CPUryzen_tr' else series[pattern] % inp_series
                     
                     if inp_model in ('gold_g6400',):
                         inp_model += '_'
@@ -43,7 +43,7 @@ def get_data(message):
                 elif pattern.startswith("GPU"):
                     from _data import GPU
 
-                    inp_series = _series[pattern] % inp_series
+                    inp_series = series[pattern] % inp_series
                     
                     if inp_model == "1060":
                         inp_model += "_6gb"
