@@ -19,7 +19,15 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def get_data(message):
-    message.text = message.text.split('-', 1)
+    message.text = message.text.strip()
+    if message.text.startswith('ryzen') or message.text.startswith('mobility'):
+        message.text = message.text.split(maxsplit=2)
+        message.text = [' '.join(message.text[:2]), message.text[2]]
+        
+    else:
+        message.text = message.text.split(maxsplit=1)
+    
+    
     if len(message.text) == 2:
         inp_series = message.text[0].strip().lower().replace(' ', '_')
         inp_model = message.text[1].strip().lower().replace(' ', '_')
