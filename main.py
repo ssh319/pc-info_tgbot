@@ -19,7 +19,7 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def get_data(message):
-    message.text = message.text.strip()
+    message.text = message.text.lower().strip()
     if message.text.startswith('ryzen') or message.text.startswith('mobility'):
         message.text = message.text.split(maxsplit=2)
         message.text = [' '.join(message.text[:2]), message.text[2]]
@@ -29,8 +29,8 @@ def get_data(message):
     
     
     if len(message.text) == 2:
-        inp_series = message.text[0].strip().lower().replace(' ', '_')
-        inp_model = message.text[1].strip().lower().replace(' ', '_')
+        inp_series = message.text[0].strip().replace(' ', '_')
+        inp_model = message.text[1].strip().replace(' ', '_')
 
         app = None
 
