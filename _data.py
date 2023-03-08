@@ -2,7 +2,7 @@ from re import search
 from urllib.request import urlopen
 from abc import ABC, abstractmethod
 
-_series = {
+series_list = {
     r'CPUi[3, 5, 7, 9]$': 'Core_%s-',
     r'GPUgtx': 'GeForce_%s_',
     r'CPUryzen_[3, 5, 7, 9]$': '%s_',
