@@ -1,16 +1,16 @@
 from flask import Flask
 from threading import Thread
 
-app = Flask('')
+flask_app = Flask('')
 
 
-@app.route('/')
+@flask_app.route('/')
 def home():
-    return "flask test"
+    return "flask running.."
 
 
 def run():
-    app.run(host='0.0.0.0', port=80)
+    flask_app.run(host='0.0.0.0', port=80)
 
 
 def non_stop():
