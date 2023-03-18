@@ -40,10 +40,9 @@ class BaseComponent(ABC):
                 self.model = self.model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
 
         self.url = f"https://www.chaynikam.info/{self.__class__.__name__.lower()}_comparison.html?{self.series + self.model}"
-        self.html = str(urlopen(self.url).read()).replace('\\n', '').replace('<br/>', ' ')
-
-        for i in range(ord('А'), ord('я') + 1):
-            self.html = self.html.replace(str(bytearray(chr(i), 'utf-8'))[12:-2], chr(i))
+        
+        with urlopen(self.url) as request:
+            self.html = request.read().decode('utf-8').replace('\n', '').replace('<br/>', ' ')
 
     @abstractmethod
     def _setup(self, keyword: str) -> str: ...
