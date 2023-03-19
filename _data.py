@@ -1,6 +1,6 @@
-from re import search
 from urllib.request import urlopen
 from abc import ABC, abstractmethod
+from lxml.html import fromstring
 
 series_list = {
     r'CPUi[3, 5, 7, 9]$': 'Core_%s-',
@@ -40,9 +40,9 @@ class BaseComponent(ABC):
                 self.model = self.model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
 
         self.url = f"https://www.chaynikam.info/{self.__class__.__name__.lower()}_comparison.html?{self.series + self.model}"
-        
+
         with urlopen(self.url) as request:
-            self.html = request.read().decode('utf-8').replace('\n', '').replace('<br/>', ' ')
+            self.html = fromstring(request.read().decode('utf-8').replace('\n', '').replace('<br/>', ' '))
 
     @abstractmethod
     def _setup(self, keyword: str) -> str: ...
@@ -56,16 +56,28 @@ class BaseComponent(ABC):
 
 class CPU(BaseComponent):
     def _setup(self, keyword: str) -> str:
-        pattern = fr'<tr id=\"{keyword}\".+?transparent\">[/+\-(),.\s?\w-]+<?'
-
-        result = search(pattern, self.html).group()
-        return search(r'>[/+(),.\w\s-]+<$', result).group()[1:-1]
+        result = self.html.xpath(
+            (
+                "body"
+                "//div[@class='body']"
+                "//table[@id='table1']"
+                f"/tr[@id='{keyword}']"
+                "/td[@class='td6']"
+                "/text()"
+            )
+        )
+        return result[0] if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
-        name_pattern = r"\"text-decoration: underline\">[+(),.\w\s-]+<?"
-        score_pattern = r"width:85%\"></div>\d+<"
-        name = search(r">[+(),.\w\s-]+<$", search(name_pattern, self.html).group()).group()[1:-1]
-        score = search(r"\d+<$", search(score_pattern, self.html).group()).group()[:-1]
+        name, score = self.html.xpath(
+            (
+                "body"
+                "//div[@id='rating']"
+                "//table"
+                "/tr[3]"
+                "//text()"
+            )
+        )[:2]
         return name, score
 
     def get_params(self) -> str:
@@ -92,16 +104,39 @@ class CPU(BaseComponent):
 
 class GPU(BaseComponent):
     def _setup(self, keyword: str) -> str:
-        pattern = fr'<tr id=\"{keyword}\".+?style=\"\">[|/+\-(),.\s?\w-]+<?'
-
-        result = search(pattern, self.html).group()
-        return search(r'>[|/+(),.\w\s-]+<$', result).group()[1:-1]
+        result = self.html.xpath(
+            (
+                "//div[@class='body']"
+                "//table[@id='tableosn']"
+                f"/tr[@id='{keyword}']"
+                "/td[@class='tk1']"
+                "/text()"
+            )
+        )
+        return result[0] if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
-        name_pattern = r"class=\"white\".+?title=\"\">[+(),.\w\s-]+<?"
-        score_pattern = r"class=\"sp_rat\">\d+<"
-        name = search(r">[+(),.\w\s-]+<$", search(name_pattern, self.html).group()).group()[1:-1]
-        score = search(r"\d+<$", search(score_pattern, self.html).group()).group()[:-1]
+        name = self.html.xpath(
+            (
+                "body"
+                "//div[@id='ratdivob']"
+                "//table[@id='tabrating']"
+                "//tr[2]"
+                "//a[@class='white']"
+                "/text()"
+            )
+        )[0]
+
+        score = self.html.xpath(
+            (
+                "body"
+                "//div[@id='ratdivob']"
+                "//table[@id='tabrating']"
+                "//tr[2]"
+                "//span[@class='sp_rat']"
+                "/text()"
+            )
+        )[0]
         return name, score
 
     def get_params(self) -> str:
