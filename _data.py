@@ -42,7 +42,7 @@ class BaseComponent(ABC):
         self.url = f"https://www.chaynikam.info/{self.__class__.__name__.lower()}_comparison.html?{self.series + self.model}"
 
         with urlopen(self.url) as request:
-            self.html = fromstring(request.read().decode('utf-8').replace('\n', '').replace('<br/>', ' '))
+            self.html = fromstring(request.read().decode('utf-8'))
 
     @abstractmethod
     def _setup(self, keyword: str) -> str: ...
