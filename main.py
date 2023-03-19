@@ -1,5 +1,6 @@
 import os
-from _data import search, series_list
+from re import search
+from _data import series_list
 from telebot import TeleBot
 from background import non_stop
 
