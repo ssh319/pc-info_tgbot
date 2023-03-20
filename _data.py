@@ -57,26 +57,22 @@ class BaseComponent(ABC):
 class CPU(BaseComponent):
     def _setup(self, keyword: str) -> str:
         result = self.html.xpath(
-            (
                 "body"
                 "//div[@class='body']"
                 "//table[@id='table1']"
                 f"/tr[@id='{keyword}']"
                 "/td[@class='td6']"
                 "/text()"
-            )
         )
         return result[0] if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
         name, score = self.html.xpath(
-            (
                 "body"
                 "//div[@id='rating']"
                 "//table"
                 "/tr[3]"
                 "//text()"
-            )
         )[:2]
         return name, score
 
@@ -105,37 +101,31 @@ class CPU(BaseComponent):
 class GPU(BaseComponent):
     def _setup(self, keyword: str) -> str:
         result = self.html.xpath(
-            (
                 "//div[@class='body']"
                 "//table[@id='tableosn']"
                 f"/tr[@id='{keyword}']"
                 "/td[@class='tk1']"
                 "/text()"
-            )
         )
         return result[0] if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
         name = self.html.xpath(
-            (
                 "body"
                 "//div[@id='ratdivob']"
                 "//table[@id='tabrating']"
                 "//tr[2]"
                 "//a[@class='white']"
                 "/text()"
-            )
         )[0]
 
         score = self.html.xpath(
-            (
                 "body"
                 "//div[@id='ratdivob']"
                 "//table[@id='tabrating']"
                 "//tr[2]"
                 "//span[@class='sp_rat']"
                 "/text()"
-            )
         )[0]
         return name, score
 
