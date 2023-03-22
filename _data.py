@@ -39,7 +39,12 @@ class BaseComponent(ABC):
             elif self.series == 'pentium_' and self.model[:2] in ('2_', '3_'):
                 self.model = self.model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
 
-        self.url = f"https://www.chaynikam.info/{self.__class__.__name__.lower()}_comparison.html?{self.series + self.model}"
+        self.url = (
+            "https://www.chaynikam.info/"
+            f"{self.__class__.__name__.lower()}"
+            "_comparison.html?"
+            f"{self.series + self.model}"
+        )
 
         with urlopen(self.url) as request:
             self.html = fromstring(request.read().decode('utf-8'))

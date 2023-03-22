@@ -14,7 +14,7 @@ bot = TeleBot(API_TOKEN)
 def start_message(message):
     bot.send_message(
         message.chat.id,
-        'Введите линейку устройства и его модель.'
+        "Введите линейку устройства и его модель."
     )
 
 
@@ -27,8 +27,7 @@ def get_data(message):
         
     else:
         message.text = message.text.split(maxsplit=1)
-    
-    
+
     if len(message.text) == 2:
         inp_series = message.text[0].strip().replace(' ', '_')
         inp_model = message.text[1].strip().replace(' ', '_')
@@ -59,6 +58,7 @@ def get_data(message):
 
                     app = GPU(series=inp_series, model=inp_model)
                     break
+
         if app:
             bot.send_message(message.chat.id, app.get_params())
 
