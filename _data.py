@@ -85,7 +85,6 @@ class CPU(BaseComponent):
     def get_params(self) -> str:
         name, score = self._get_name_and_score()
 
-        cpu_thirdcache = self._setup('trcachel3')
         params = [
             "Год выхода: " + self._setup('tryearofprod'),
             "Тип процессора: " + self._setup('trcpucategory'),
@@ -94,14 +93,18 @@ class CPU(BaseComponent):
             "Количество потоков: " + self._setup('trnumofthreads'),
             "Базовая частота: " + self._setup('trbasefreq'),
             "Частота TurboBoost: " + self._setup('trturbofreq'),
-            "Размер кэша L3: " + cpu_thirdcache if 'нет' in cpu_thirdcache else
-            "Размер кэша L3: " + str(round(int(cpu_thirdcache) / 1024)) + ' МБ',
+            "Размер кэша L3: " + (
+                lambda value: value if 'нет' in value.lower() else
+                str(round(int(value) / 1024)) + ' МБ'
+            )(self._setup('trcachel3')),
             "Тепловыделение: " + self._setup('trtdp'),
             "Встроенный графический процессор: " + self._setup('trgraphics'),
             "Контроллер ОЗУ: " + self._setup('trmemorycontroller'),
         ]
-        return (f"\n{'-' * 30}\n".join(params)
-                + f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------')
+        return (
+            f"\n{'-' * 30}\n".join(params) +
+            f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------'
+        )
 
 
 class GPU(BaseComponent):
@@ -155,5 +158,7 @@ class GPU(BaseComponent):
             "Мин. блок питания: " + self._setup('tr_bppower'),
             "Разъёмы доп. питания: " + self._setup('tr_doppitanie'),
         ]
-        return (f"\n{'-' * 30}\n".join(params)
-                + f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------')
+        return (
+            f"\n{'-' * 30}\n".join(params) +
+            f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------'
+        )

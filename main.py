@@ -34,13 +34,13 @@ def get_data(message):
 
         app = None
 
-        for pattern in series_list:
+        for pattern, value in series_list.items():
             if search(pattern[3:], inp_series):
 
                 if pattern.startswith("CPU"):
                     from _data import CPU
 
-                    inp_series = series_list[pattern] if pattern == 'CPUryzen_tr' else series_list[pattern] % inp_series
+                    inp_series = value if pattern == 'CPUryzen_tr' else value % inp_series
                     
                     if inp_model in ('gold_g6400',):
                         inp_model += '_'
@@ -51,7 +51,7 @@ def get_data(message):
                 elif pattern.startswith("GPU"):
                     from _data import GPU
 
-                    inp_series = series_list[pattern] % inp_series
+                    inp_series = value % inp_series
                     
                     if inp_model == "1060":
                         inp_model += "_6gb"
