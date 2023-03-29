@@ -23,7 +23,8 @@ series_list = {
     r'GPUgt': 'GeForce_%s_',
     r'CPUepyc': '%s_',
     r'GPUgts': 'GeForce_%s_',
-    r'CPUfx': '%s-'
+    r'CPUfx': '%s-',
+    r'GPUgeforce': '%s_'
 }
 
 
