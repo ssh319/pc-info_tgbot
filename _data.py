@@ -1,6 +1,6 @@
-from urllib.request import urlopen
 from abc import ABC, abstractmethod
 from lxml.html import fromstring
+from urllib.request import urlopen
 
 series_list = {
     r'CPUi[3, 5, 7, 9]$': 'Core_%s-',
