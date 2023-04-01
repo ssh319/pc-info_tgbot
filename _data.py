@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from lxml.html import fromstring
 from urllib.request import urlopen
 
+
 series_list = {
     r'CPUi[3, 5, 7, 9]$': 'Core_%s-',
     r'GPUgtx': 'GeForce_%s_',
@@ -32,7 +33,7 @@ class BaseComponent(ABC):
     def __init__(self, series, model):
         self.series = series
         self.model = model
-        
+
         if self.__class__ is CPU:
             if self.series in ("athlon_", "phenom_"):
                 self.model = self.model.replace('2_', 'II_', 1).replace('xII', 'x2')
@@ -73,14 +74,14 @@ class CPU(BaseComponent):
         return result[0] if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
-        name, score = self.html.xpath(
+        result = self.html.xpath(
             "body"
             "//div[@id='rating']"
             "//table"
             "/tr[3]"
             "//text()"
-        )[:2]
-        return name, score
+        )
+        return result[:2] if result else ('0', '0')
 
     def get_params(self) -> str:
         name, score = self._get_name_and_score()
@@ -102,9 +103,9 @@ class CPU(BaseComponent):
             "Контроллер ОЗУ: " + self._setup('trmemorycontroller'),
         ]
         return (
-            f"\n{'-' * 30}\n".join(params) +
-            f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------'
-        )
+                f"\n{'-' * 30}\n".join(params) +
+                f"\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------"
+        ) if score != '0' else "Неверная модель процессора."
 
 
 class GPU(BaseComponent):
@@ -126,7 +127,7 @@ class GPU(BaseComponent):
             "//tr[2]"
             "//a[@class='white']"
             "/text()"
-        )[0]
+        )
 
         score = self.html.xpath(
             "body"
@@ -135,8 +136,8 @@ class GPU(BaseComponent):
             "//tr[2]"
             "//span[@class='sp_rat']"
             "/text()"
-        )[0]
-        return name, score
+        )
+        return (name[0], score[0]) if (name and score) else ('0', '0')
 
     def get_params(self) -> str:
         name, score = self._get_name_and_score()
@@ -159,6 +160,6 @@ class GPU(BaseComponent):
             "Разъёмы доп. питания: " + self._setup('tr_doppitanie'),
         ]
         return (
-            f"\n{'-' * 30}\n".join(params) +
-            f'\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------'
-        )
+                f"\n{'-' * 30}\n".join(params) +
+                f"\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------"
+        ) if score != '0' else "Неверная модель видеокарты."

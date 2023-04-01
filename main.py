@@ -9,6 +9,8 @@ API_TOKEN = os.environ.get('*token*')
 
 bot = TeleBot(API_TOKEN)
 
+not_found_err = "Название устройства не найдено."
+
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -20,47 +22,58 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def get_data(message):
-    message.text = message.text.lower().strip()
+    message.text = message.text.strip().lower()
     if message.text.startswith('ryzen') or message.text.startswith('mobility'):
         message.text = message.text.split(maxsplit=2)
-        message.text = [' '.join(message.text[:2]), message.text[2]]
-        
+
+        if len(message.text) == 3:
+            message.text = [' '.join(message.text[:2]), message.text[2]]
+
+        else:
+            bot.send_message(message.chat.id, not_found_err)
+            return
+
     else:
         message.text = message.text.split(maxsplit=1)
 
-    if len(message.text) == 2:
-        inp_series = message.text[0].strip().replace(' ', '_')
-        inp_model = message.text[1].strip().replace(' ', '_')
+        if len(message.text) != 2:
+            bot.send_message(message.chat.id, not_found_err)
+            return
 
-        app = None
+    inp_series = message.text[0].strip().replace(' ', '_')
+    inp_model = message.text[1].strip().replace(' ', '_')
 
-        for pattern, value in series_list.items():
-            if search(pattern[3:], inp_series):
+    app = None
 
-                if pattern.startswith("CPU"):
-                    from _data import CPU
+    for pattern, value in series_list.items():
+        if search(pattern[3:], inp_series):
 
-                    inp_series = value if pattern == 'CPUryzen_tr' else value % inp_series
-                    
-                    if inp_model in ('gold_g6400',):
-                        inp_model += '_'
+            if pattern.startswith("CPU"):
+                from _data import CPU
 
-                    app = CPU(series=inp_series, model=inp_model)
-                    break
+                inp_series = value if pattern == "CPUryzen_tr" else value % inp_series
 
-                elif pattern.startswith("GPU"):
-                    from _data import GPU
+                if inp_model in ("gold_g6400",):
+                    inp_model += '_'
 
-                    inp_series = value % inp_series
-                    
-                    if inp_model == "1060":
-                        inp_model += "_6gb"
+                app = CPU(series=inp_series, model=inp_model)
+                break
 
-                    app = GPU(series=inp_series, model=inp_model)
-                    break
+            elif pattern.startswith("GPU"):
+                from _data import GPU
 
-        if app:
-            bot.send_message(message.chat.id, app.get_params())
+                inp_series = value % inp_series
+
+                if inp_model == "1060":
+                    inp_model += "_6gb"
+
+                elif inp_model in ("hd_5650",):
+                    inp_series = "ATI_" + inp_series
+
+                app = GPU(series=inp_series, model=inp_model)
+                break
+
+    bot.send_message(message.chat.id, app.get_params() if app else not_found_err)
 
 
 if __name__ == '__main__':
