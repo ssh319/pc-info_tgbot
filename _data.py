@@ -49,7 +49,7 @@ class BaseComponent(ABC):
         )
 
         with urlopen(self.url) as request:
-            self.html = fromstring(request.read().decode('utf-8'))
+            self.html = fromstring(request.read().decode("utf-8"))
 
     @abstractmethod
     def _setup(self, keyword: str) -> str: ...
@@ -71,7 +71,7 @@ class CPU(BaseComponent):
             "/td[@class='td6']"
             "/text()"
         )
-        return result[0] if result else "Нет"
+        return (result[0] if len(result) == 1 else ' '.join(result[:2])) if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
         result = self.html.xpath(
@@ -102,9 +102,10 @@ class CPU(BaseComponent):
             "Встроенный графический процессор: " + self._setup('trgraphics'),
             "Контроллер ОЗУ: " + self._setup('trmemorycontroller'),
         ]
+
         return (
-                f"\n{'-' * 30}\n".join(params) +
-                f"\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------"
+            f"\n{'-' * 30}\n".join(params) +
+            f"\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------"
         ) if score != '0' else "Неверная модель процессора."
 
 
@@ -117,7 +118,7 @@ class GPU(BaseComponent):
             "/td[@class='tk1']"
             "/text()"
         )
-        return result[0] if result else "Нет"
+        return (result[0] if len(result) == 1 else ' '.join(result[:2])) if result else "Нет"
 
     def _get_name_and_score(self) -> tuple:
         name = self.html.xpath(
@@ -159,7 +160,8 @@ class GPU(BaseComponent):
             "Мин. блок питания: " + self._setup('tr_bppower'),
             "Разъёмы доп. питания: " + self._setup('tr_doppitanie'),
         ]
+
         return (
-                f"\n{'-' * 30}\n".join(params) +
-                f"\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------"
+            f"\n{'-' * 30}\n".join(params) +
+            f"\n\n\nБалл производительности для\n{name}:\n----------     {score}     ----------"
         ) if score != '0' else "Неверная модель видеокарты."
