@@ -34,7 +34,7 @@ class BaseComponent(ABC):
         self.series = series
         self.model = model
 
-        if self.__class__ is CPU:
+        if isinstance(self, CPU):
             if self.series in ("athlon_", "phenom_"):
                 self.model = self.model.replace('2_', 'II_', 1).replace('xII', 'x2')
 
