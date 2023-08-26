@@ -1,18 +1,13 @@
 import os
-from re import search
-from _data import series_list
 from telebot import TeleBot
-from background import non_stop
+from input_handler import userInput
 
 
-API_TOKEN = os.environ.get('*token*')
+API_TOKEN = os.environ.get("*token*")
 
 bot = TeleBot(API_TOKEN)
 
-not_found_err = "Название устройства не найдено."
-
-
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def start_message(message):
     bot.send_message(
         message.chat.id,
@@ -20,62 +15,19 @@ def start_message(message):
     )
 
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(content_types=["text"])
 def get_data(message):
-    message.text = message.text.strip().lower()
-    if message.text.startswith('ryzen') or message.text.startswith('mobility'):
-        message.text = message.text.split(maxsplit=2)
 
-        if len(message.text) == 3:
-            message.text = [' '.join(message.text[:2]), message.text[2]]
+    request = userInput(message.text)
+    app = request.get_requested_component()
 
-        else:
-            bot.send_message(message.chat.id, not_found_err)
-            return
+    if app is not None:
+        bot.send_message(message.chat.id, app.get_response())
+        return
 
-    else:
-        message.text = message.text.split(maxsplit=1)
-
-        if len(message.text) != 2:
-            bot.send_message(message.chat.id, not_found_err)
-            return
-
-    inp_series = message.text[0].strip().replace(' ', '_')
-    inp_model = message.text[1].strip().replace(' ', '_')
-
-    app = None
-
-    for pattern, value in series_list.items():
-        if search(pattern[3:], inp_series):
-
-            if pattern.startswith("CPU"):
-                from _data import CPU
-
-                inp_series = value if pattern == "CPUryzen_tr" else value % inp_series
-
-                if inp_model in ("gold_g6400",):
-                    inp_model += '_'
-
-                app = CPU(series=inp_series, model=inp_model)
-                break
-
-            elif pattern.startswith("GPU"):
-                from _data import GPU
-
-                inp_series = value % inp_series
-
-                if inp_model == "1060":
-                    inp_model += "_6gb"
-
-                elif inp_model in ("hd_5650",):
-                    inp_series = "ATI_" + inp_series
-
-                app = GPU(series=inp_series, model=inp_model)
-                break
-
-    bot.send_message(message.chat.id, app.get_params() if app else not_found_err)
+    # Respond with error message
+    bot.send_message(message.chat.id, "Название устройства не найдено.")
 
 
-if __name__ == '__main__':
-    non_stop()
+if __name__ == "__main__":
     bot.infinity_polling()

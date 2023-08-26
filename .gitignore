@@ -1,3 +1,5 @@
-/shelf/
-/workspace.xml
-.idea/*
+# Python cache folders
+__pycache__/
+
+# Virtual environment
+venv/
