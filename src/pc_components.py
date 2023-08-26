@@ -78,7 +78,7 @@ class CPU(BaseComponent):
         else:
             return "Неверная модель процессора."
         
-        # If requested CPU model is not found, web-site returns "0" as performance score
+        # If requested CPU model is not found, web-site returns "0" as a performance score
         if score == "0":
             return "Неверная модель процессора."
 
