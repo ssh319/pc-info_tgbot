@@ -1,6 +1,6 @@
 import os
 from telebot import TeleBot
-from input_handler import userInput
+from input_handler import UserInput
 
 
 API_TOKEN = os.environ.get("*token*")
@@ -18,7 +18,7 @@ def start_message(message):
 @bot.message_handler(content_types=["text"])
 def get_data(message):
 
-    request = userInput(message.text)
+    request = UserInput(message.text)
     app = request.get_requested_component()
 
     if app is not None:

@@ -2,7 +2,7 @@ from re import search
 import pc_components
 
 
-class userInput:
+class UserInput:
     """Class that processes and looks for requested PC
     component in user message received by Telegram bot"""
 
