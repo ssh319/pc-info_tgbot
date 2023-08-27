@@ -3,8 +3,8 @@ import pc_components
 
 
 class UserInput:
-    """Class that processes and looks for requested PC
-    component in user message received by Telegram bot"""
+    """Class that processes user message and
+    looks for desired PC component in it."""
 
     CPU_FAMILIES_LIST = {
         r"i[3, 5, 7, 9]$": "Core_%s-",
@@ -60,10 +60,10 @@ class UserInput:
         return (values_list is not None) and (len(values_list) == 2)
     
     def _handle_exceptional_cases(self) -> None:
-        """Some components have different, non-standard
-        URLs. This method directly edits entered
-        device family and model as class attributes
-        to make them valid for sending request."""
+        """Some CPUs and GPUs have different, non-standard URLs.
+        This method directly edits entered device family and
+        model as class attributes to make them valid
+        for further request sending."""
 
         if self.input_family in ("athlon_", "phenom_"):
             self.input_model = self.input_model.replace('2_', 'II_', 1).replace('xII', 'x2')
