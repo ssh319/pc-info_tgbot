@@ -15,7 +15,7 @@ class UserInput:
         r"phenom": "%s_",
         r"sempron": "%s_",
         r"xeon": "%s_",
-        r"ryzen_tr": "Ryzen_Threadripper_",
+        r"ryzen_threadripper": "%s_",
         r"epyc": "%s_",
         r"fx": "%s-",
         r"a[4, 6, 8, 9, 10, 12]": "%s-"
@@ -38,8 +38,8 @@ class UserInput:
     def __init__(self, input_message: str) -> None:
         self.input_message = input_message.strip().lower()
 
-    def _get_separated_input_values(self) -> list[str]:
-        """Separate user input by whitespaces to get 
+    def _get_splitted_input_values(self) -> list[str]:
+        """Split user input by whitespaces to get 
         requested device's family and model as a list."""
         if ((not self.input_message.startswith("ryzen")) and 
             (not self.input_message.startswith("mobility"))):
@@ -49,23 +49,21 @@ class UserInput:
         else:
             # Split message by 2nd whitespace since "Ryzen 3/5/7" and "Mobility Radeon"
             # contain two words in their series name
-            separated_values = self.input_message.split(maxsplit=2)
-            family = " ".join(separated_values[:2])
-            model = separated_values[2]
+            splitted_valus = self.input_message.split(maxsplit=2)
+            family = " ".join(splitted_valus[:2])
+            model = splitted_valus[2]
             return [family, model]
         
-    def _is_valid(self, values_list: list) -> bool:
-        """Check if '_get_separated_input_values'
+    def _are_splitted_input_values_valid(self, values_list: list) -> bool:
+        """Check if '_get_splitted_input_values'
         has returned correct values"""
         return (values_list is not None) and (len(values_list) == 2)
     
-    def _handle_exceptional_cases(self, component_url) -> None:
+    def _handle_exceptional_cases(self) -> None:
         """Some components have different, non-standard
         URLs. This method directly edits entered
         device family and model as class attributes
         to make them valid for sending request."""
-        if self.input_family == "ryzen_tr":
-            self.input_family = component_url
 
         if self.input_family in ("athlon_", "phenom_"):
             self.input_model = self.input_model.replace('2_', 'II_', 1).replace('xII', 'x2')
@@ -84,13 +82,13 @@ class UserInput:
         
 
     def get_requested_component(self) -> pc_components.CPU | pc_components.GPU | None:
-        """Returns requested PC component for further request
-        to a web-site and HTML-parsing of its parameters, or
+        """Returns either the desired by user PC component for further
+        request to a web-site and HTML-parsing of its parameters, or
         'None' if no device recognized in user's message"""
-        separated_values = self._get_separated_input_values()
+        splitted_values = self._get_splitted_input_values()
 
-        if self._is_valid(separated_values):
-            self.input_family, self.input_model = separated_values
+        if self._are_splitted_input_values_valid(splitted_values):
+            self.input_family, self.input_model = splitted_values
         else:
             return None
         
@@ -106,7 +104,7 @@ class UserInput:
                 # to produce "Core_i3" from "i3" e.g. for a valid request URL
                 self.input_family = component_url % self.input_family
 
-                self._handle_exceptional_cases(component_url)
+                self._handle_exceptional_cases()
 
                 component = pc_components.CPU(series=self.input_family, model=self.input_model)
                 return component
@@ -116,7 +114,7 @@ class UserInput:
 
                 self.input_family = component_url % self.input_family
 
-                self._handle_exceptional_cases(component_url)
+                self._handle_exceptional_cases()
 
                 component = pc_components.GPU(series=self.input_family, model=self.input_model)
                 return component

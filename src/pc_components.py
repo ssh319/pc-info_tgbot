@@ -8,7 +8,7 @@ class BaseComponent(ABC):
     HTML parsing and building response methods"""
 
     def __init__(self, series: str, model: str) -> None:
-        """Class constructor performs request to the
+        """Class constructor performs a request to the
         web-site and saves received HTML document
         to parse necessary data from it with XPath"""
         self.series = series
