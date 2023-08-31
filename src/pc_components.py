@@ -16,7 +16,13 @@ class BaseComponent(ABC):
 
         self.url = (
             "https://www.chaynikam.info/" +
+
+            # Class of a component has a name
+            # either 'CPU' or 'GPU', thus producing a
+            # 'cpu_comparison.html'/'gpu_comparison.html' string
+            # for correct URL
             self.__class__.__name__.lower() +
+            
             "_comparison.html?" +
             self.series + self.model
         )
