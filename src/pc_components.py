@@ -5,11 +5,11 @@ from urllib.request import urlopen
 
 class BaseComponent(ABC):
     """Base class for CPU and GPU classes that provide
-    HTML parsing and building response methods"""
+    HTML parsing and response building methods"""
 
     def __init__(self, series: str, model: str) -> None:
         """Class constructor performs a request to the
-        web-site and saves received HTML document
+        website and saves received HTML document
         to parse necessary data from it with XPath"""
         self.series = series
         self.model = model
@@ -17,7 +17,7 @@ class BaseComponent(ABC):
         self.url = (
             "https://www.chaynikam.info/" +
 
-            # Class of a component has a name
+            # PC component class will have a name
             # either 'CPU' or 'GPU', thus producing a
             # 'cpu_comparison.html'/'gpu_comparison.html' string
             # for correct URL
@@ -84,7 +84,7 @@ class CPU(BaseComponent):
         else:
             return "Неверная модель процессора."
         
-        # If requested CPU model is not found, web-site returns "0" as a performance score
+        # If requested CPU model is not found, website returns "0" as a performance score
         if score == "0":
             return "Неверная модель процессора."
 

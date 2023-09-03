@@ -49,9 +49,9 @@ class UserInput:
         else:
             # Split message by 2nd whitespace since "Ryzen 3/5/7" and "Mobility Radeon"
             # contain two words in their series name
-            splitted_valus = self.input_message.split(maxsplit=2)
-            family = " ".join(splitted_valus[:2])
-            model = splitted_valus[2]
+            splitted_values = self.input_message.split(maxsplit=2)
+            family = " ".join(splitted_values[:2])
+            model = splitted_values[2]
             return [family, model]
         
     def _are_splitted_input_values_valid(self, values_list: list) -> bool:
@@ -83,7 +83,7 @@ class UserInput:
 
     def get_requested_component(self) -> pc_components.CPU | pc_components.GPU | None:
         """Returns either the desired by user PC component for further
-        request to a web-site and HTML-parsing of its parameters, or
+        request to the website and HTML-parsing of its parameters, or
         'None' if no device recognized in user's message"""
         splitted_values = self._get_splitted_input_values()
 
