@@ -63,7 +63,7 @@ class UserInput:
     def __handle_exceptional_cases(self) -> None:
         """Some CPUs and GPUs have different, non-standard URLs.
         This method directly edits entered device family and
-        model as a class attributes to make them valid
+        model as class attributes to make them valid
         for further request sending."""
 
         if self.input_family in ("athlon_", "phenom_"):
