@@ -18,8 +18,8 @@ class BaseComponent(ABC):
             "https://www.chaynikam.info/" +
 
             # PC component class will have a name
-            # either 'CPU' or 'GPU', thus producing a
-            # 'cpu_comparison.html'/'gpu_comparison.html' string
+            # either "CPU" or "GPU", thus producing a
+            # "cpu_comparison.html"/"gpu_comparison.html" string
             # for correct URL
             self.__class__.__name__.lower() +
             

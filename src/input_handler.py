@@ -38,40 +38,41 @@ class UserInput:
     def __init__(self, input_message: str) -> None:
         self.input_message = input_message.strip().lower()
 
-    def _get_splitted_input_values(self) -> list[str]:
+    def _get_splitted_input_values(self) -> list[str] | None:
         """Split user input by whitespaces to get 
-        requested device's family and model as a list."""
-        if ((not self.input_message.startswith("ryzen")) and 
-            (not self.input_message.startswith("mobility"))):
+        requested device's family and model as a list
+        or 'None' if message isn't containing
+        more than only one word"""
+        if not (self.input_message.startswith("ryzen") or
+                self.input_message.startswith("mobility")):
             
-            return self.input_message.split(maxsplit=1)
-
+            splitted_values = self.input_message.split(maxsplit=1)
+            
+            if len(splitted_values) == 2:
+                return splitted_values
+            
         else:
             # Split message by 2nd whitespace since "Ryzen 3/5/7" and "Mobility Radeon"
             # contain two words in their series name
             splitted_values = self.input_message.split(maxsplit=2)
-            family = " ".join(splitted_values[:2])
-            model = splitted_values[2]
-            return [family, model]
-        
-    def _are_splitted_input_values_valid(self, values_list: list) -> bool:
-        """Check if '_get_splitted_input_values'
-        has returned correct values"""
-        return (values_list is not None) and (len(values_list) == 2)
+            
+            if len(splitted_values) == 2:
+                family, model = " ".join(splitted_values[:2]), splitted_values[2]
+                return [family, model]
     
-    def _handle_exceptional_cases(self) -> None:
+    def __handle_exceptional_cases(self) -> None:
         """Some CPUs and GPUs have different, non-standard URLs.
         This method directly edits entered device family and
-        model as class attributes to make them valid
+        model as a class attributes to make them valid
         for further request sending."""
 
         if self.input_family in ("athlon_", "phenom_"):
             self.input_model = self.input_model.replace('2_', 'II_', 1).replace('xII', 'x2')
 
-        elif self.input_family == 'pentium_' and self.input_model[:2] in ('2_', '3_'):
+        elif (self.input_family == 'pentium_') and (self.input_model[:2] in ('2_', '3_')):
             self.input_model = self.input_model.replace('2_', 'II_', 1).replace('3_', 'III_', 1)
             
-        if self.input_model == "gold_g6400":
+        if self.input_model in ("gold_g6400", "1220p"):
             self.input_model += "_"
 
         elif self.input_model == "1060":
@@ -79,7 +80,19 @@ class UserInput:
 
         elif self.input_model == "hd_5650":
             self.input_family = "ATI_" + self.input_family
-        
+
+    def _create_component(self, component_class: type, component_url: str) -> pc_components.CPU | pc_components.GPU:
+        """Completely validate user entered data and
+        create an instance of requested device class"""
+
+        # Paste entered by user device series into a formattable string
+        # to produce "Core_i3" from "i3" e.g. for a valid request URL
+        self.input_family = component_url % self.input_family
+
+        self.__handle_exceptional_cases()
+
+        component = component_class(series=self.input_family, model=self.input_model)
+        return component
 
     def get_requested_component(self) -> pc_components.CPU | pc_components.GPU | None:
         """Returns either the desired by user PC component for further
@@ -87,34 +100,20 @@ class UserInput:
         'None' if no device recognized in user's message"""
         splitted_values = self._get_splitted_input_values()
 
-        if self._are_splitted_input_values_valid(splitted_values):
-            self.input_family, self.input_model = splitted_values
-        else:
-            return None
+        if splitted_values is None:
+            return
         
-        # URLs do not have whitespaces but underscores
+        self.input_family, self.input_model = splitted_values
+        
+        # URLs of the website being used do not have whitespaces but underscores
         self.input_family = self.input_family.strip().replace(" ", "_")
         self.input_model = self.input_model.strip().replace(" ", "_")
 
         # Looking for a device series in user message with regular expression
         for pattern, component_url in self.CPU_FAMILIES_LIST.items():
             if search(pattern, self.input_family):
-
-                # Paste entered by user device series into a formattable string
-                # to produce "Core_i3" from "i3" e.g. for a valid request URL
-                self.input_family = component_url % self.input_family
-
-                self._handle_exceptional_cases()
-
-                component = pc_components.CPU(series=self.input_family, model=self.input_model)
-                return component
+                return self._create_component(pc_components.CPU, component_url)
 
         for pattern, component_url in self.GPU_FAMILIES_LIST.items():
             if search(pattern, self.input_family):
-
-                self.input_family = component_url % self.input_family
-
-                self._handle_exceptional_cases()
-
-                component = pc_components.GPU(series=self.input_family, model=self.input_model)
-                return component
+                return self._create_component(pc_components.GPU, component_url)
