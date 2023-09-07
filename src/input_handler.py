@@ -52,11 +52,11 @@ class UserInput:
                 return splitted_values
             
         else:
-            # Split message by 2nd whitespace since "Ryzen 3/5/7" and "Mobility Radeon"
+            # Split message by 2nd whitespace since "Ryzen 3/5/7/9" and "Mobility Radeon"
             # contain two words in their series name
             splitted_values = self.input_message.split(maxsplit=2)
             
-            if len(splitted_values) == 2:
+            if len(splitted_values) == 3:
                 family, model = " ".join(splitted_values[:2]), splitted_values[2]
                 return [family, model]
     

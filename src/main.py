@@ -11,18 +11,18 @@ bot = TeleBot(API_TOKEN)
 def start_message(message):
     bot.send_message(
         message.chat.id,
-        "Введите линейку устройства и его модель."
+        "Введите линейку необходимого устройства и его модель."
     )
 
 
 @bot.message_handler(content_types=["text"])
 def get_data(message):
 
-    request = UserInput(message.text)
-    app = request.get_requested_component()
+    user_request = UserInput(message.text)
+    requested_component = user_request.get_requested_component()
 
-    if app is not None:
-        bot.send_message(message.chat.id, app.get_response())
+    if requested_component is not None:
+        bot.send_message(message.chat.id, requested_component.get_response())
         return
 
     # Respond with error message
