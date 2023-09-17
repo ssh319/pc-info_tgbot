@@ -43,6 +43,7 @@ class UserInput:
         requested device's family and model as a list
         or 'None' if message isn't containing
         more than only one word"""
+        
         if not (self.input_message.startswith("ryzen") or
                 self.input_message.startswith("mobility")):
             
@@ -98,6 +99,7 @@ class UserInput:
         """Returns either the desired by user PC component for further
         request to the website and HTML-parsing of its parameters, or
         'None' if no device recognized in user's message"""
+
         splitted_values = self._get_splitted_input_values()
 
         if splitted_values is None:

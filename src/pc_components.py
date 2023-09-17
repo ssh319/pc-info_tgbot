@@ -11,6 +11,7 @@ class BaseComponent(ABC):
         """Class constructor performs a request to the
         website and saves received HTML document
         to parse necessary data from it with XPath"""
+
         self.series = series
         self.model = model
 
@@ -41,6 +42,7 @@ class BaseComponent(ABC):
         """Table cells that contain information are marked
         with short descriptive keywords in their HTML IDs
         for each component characteristic"""
+
         pass
 
     @abstractmethod
@@ -53,6 +55,8 @@ class BaseComponent(ABC):
 
 
 class CPU(BaseComponent):
+    NOT_FOUND_MESSAGE = "Неверная модель процессора."
+
     def _parse_info(self, keyword: str) -> str:
         result = self.html.xpath(
             "body"
@@ -76,17 +80,29 @@ class CPU(BaseComponent):
             "//text()"
         )
         return result[:2] if result else None
+    
+    def __convert_cache_size(self, kbs: str) -> str:
+        """Convert received L3 cache size from KBs
+        to MBs if it is valid numeric value"""
+
+        if not kbs.isnumeric():
+            return "Нет"
+
+        mbs = round(int(kbs) / 1024)
+
+        return str(mbs) + " МБ"
 
     def get_response(self) -> str:
         name_and_score = self._parse_name_and_score()
-        if name_and_score is not None:
-            name, score = name_and_score
-        else:
-            return "Неверная модель процессора."
+
+        if name_and_score is None:
+            return self.NOT_FOUND_MESSAGE
+
+        name, score = name_and_score
         
         # If requested CPU model is not found, website returns "0" as a performance score
         if score == "0":
-            return "Неверная модель процессора."
+            return self.NOT_FOUND_MESSAGE
 
         params = [
             "Год выхода: " + self._parse_info('tryearofprod'),
@@ -96,11 +112,7 @@ class CPU(BaseComponent):
             "Количество потоков: " + self._parse_info('trnumofthreads'),
             "Базовая частота: " + self._parse_info('trbasefreq'),
             "Частота TurboBoost: " + self._parse_info('trturbofreq'),
-            "Размер кэша L3: " + (
-                # Convert L3 Cache size from KBs to MBs
-                lambda cache_size: cache_size if 'нет' in cache_size.lower() else
-                str(round(int(cache_size) / 1024)) + ' МБ'
-            )(self._parse_info('trcachel3')),
+            "Размер кэша L3: " + self.__convert_cache_size(self._parse_info('trcachel3')),
             "Тепловыделение: " + self._parse_info('trtdp'),
             "Встроенный графический процессор: " + self._parse_info('trgraphics'),
             "Контроллер ОЗУ: " + self._parse_info('trmemorycontroller'),
@@ -110,6 +122,8 @@ class CPU(BaseComponent):
 
 
 class GPU(BaseComponent):
+    NOT_FOUND_MESSAGE = "Неверная модель видеокарты."
+
     def _parse_info(self, keyword: str) -> str:
         result = self.html.xpath(
             "body"
@@ -146,10 +160,11 @@ class GPU(BaseComponent):
 
     def get_response(self) -> str:
         name_and_score = self._parse_name_and_score()
-        if name_and_score is not None:
-            name, score = name_and_score
-        else:
-            return "Неверная модель видеокарты."
+
+        if name_and_score is None:
+            return self.NOT_FOUND_MESSAGE
+
+        name, score = name_and_score
 
         params = [
             "Год выхода: " + self._parse_info('tr_yearofprod'),
