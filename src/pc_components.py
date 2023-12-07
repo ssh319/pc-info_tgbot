@@ -28,8 +28,8 @@ class BaseComponent(ABC):
             self.series + self.model
         )
         
-        with urlopen(self.url) as request:
-            self.html = fromstring(request.read().decode("utf-8"))
+        with urlopen(self.url) as response:
+            self.html = fromstring(response.read().decode("utf-8"))
 
     def _get_formatted_chat_response(self, name: str, score: str, params: list[str]) -> str:
         return (
