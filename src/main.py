@@ -1,9 +1,10 @@
 import os
+
 from telebot import TeleBot
 from input_handler import UserInput
 
 
-API_TOKEN = os.environ.get("*token*")
+API_TOKEN = os.environ["TG_TOKEN"]
 
 bot = TeleBot(API_TOKEN)
 
@@ -24,9 +25,18 @@ def get_data(message):
     if requested_component is not None:
         bot.send_message(message.chat.id, requested_component.get_response())
         return
-
+    
     # Respond with error message
-    bot.send_message(message.chat.id, "Название устройства не найдено.")
+    if hasattr(user_request, "input_family"):
+        bot.send_message(message.chat.id, f"Название '{user_request.input_family}' не распознано.")
+        return
+    
+    help_message = (
+        "Ввод не содержит разделённых ПРОБЕЛОМ линейки и модели устр-ва.\n\n"
+        "Корректные примеры использования:\ni5 9400f\nradeon rx 580\nrtx 2080 ti"
+    )
+
+    bot.send_message(message.chat.id, help_message)
 
 
 if __name__ == "__main__":

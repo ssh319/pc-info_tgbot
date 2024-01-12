@@ -1,4 +1,5 @@
 from re import search
+
 import pc_components
 
 
@@ -43,6 +44,13 @@ class UserInput:
         requested device's family and model as a list
         or 'None' if message isn't containing
         more than only one word"""
+
+        # Remove a redundant vendor name from the input if it is
+        if (self.input_message.startswith("intel") or
+            self.input_message.startswith("amd") or 
+            self.input_message.startswith("nvidia")):
+
+            self.input_message = self.input_message.split(maxsplit=1)[1]
         
         if not (self.input_message.startswith("ryzen") or
                 self.input_message.startswith("mobility")):
